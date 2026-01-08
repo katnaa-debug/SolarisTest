@@ -111,9 +111,9 @@ local Themes = {
 		Main        = Color3.fromRGB(20, 25, 25),
 		Second      = Color3.fromRGB(30, 35, 35),
 		Accent      = Color3.fromRGB(100, 255, 180),
-		Gradient    = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 255, 150)), ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 255, 250))},
+		Gradient    = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 200, 120)), ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 255, 200))},
 		Text        = Color3.fromRGB(230, 255, 240),
-		TextDark    = Color3.fromRGB(130, 170, 160),
+		TextDark    = Color3.fromRGB(120, 160, 140),
 		Error       = Color3.fromRGB(255, 80, 80)
 	},
 	Night = {
@@ -126,12 +126,12 @@ local Themes = {
 		Error       = Color3.fromRGB(255, 80, 80)
 	},
 	Void = {
-		Main        = Color3.fromRGB(15, 15, 15),
-		Second      = Color3.fromRGB(30, 30, 30),
-		Accent      = Color3.fromRGB(200, 200, 200),
-		Gradient    = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 100, 100)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))},
-		Text        = Color3.fromRGB(255, 255, 255),
-		TextDark    = Color3.fromRGB(150, 150, 150),
+		Main        = Color3.fromRGB(12, 12, 12),
+		Second      = Color3.fromRGB(22, 22, 22),
+		Accent      = Color3.fromRGB(220, 220, 220),
+		Gradient    = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(150, 150, 150)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))},
+		Text        = Color3.fromRGB(240, 240, 240),
+		TextDark    = Color3.fromRGB(120, 120, 120),
 		Error       = Color3.fromRGB(255, 100, 100)
 	}
 }
@@ -317,30 +317,26 @@ function Library:CreateWindow(Settings)
 	local ScreenGui = Create("ScreenGui", { Name = "LiquidUI", ResetOnSpawn = false, DisplayOrder = 10000 })
 	if RunService:IsStudio() then ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui") else pcall(function() ScreenGui.Parent = CoreGui end) if not ScreenGui.Parent then ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui") end end
 
-	-- === [ FIXED NOTIFICATION SYSTEM (TOP RIGHT) ] ===
+	-- === NOTIFICATION SYSTEM ===
 	local NotifContainer = Create("Frame", {
-		Parent = ScreenGui, 
-		Size = UDim2.new(0, 300, 1, -50), -- Height full minus padding
-		Position = UDim2.new(1, -320, 0, 20), -- TOP RIGHT
+		Parent = ScreenGui, Size = UDim2.new(0, 300, 1, -20), Position = UDim2.new(1, -320, 0, 50), -- ПОЗИЦИЯ: СПРАВА СВЕРХУ
 		BackgroundTransparency = 1, ZIndex = 10000
 	})
 	local NotifLayout = Create("UIListLayout", {
-		Parent = NotifContainer, 
-		SortOrder = Enum.SortOrder.LayoutOrder,
-		VerticalAlignment = Enum.VerticalAlignment.Top, -- STACK FROM TOP
-		Padding = UDim.new(0, 10)
+		Parent = NotifContainer, SortOrder = Enum.SortOrder.LayoutOrder,
+		VerticalAlignment = Enum.VerticalAlignment.Top, Padding = UDim.new(0, 10)
 	})
 
 	function Library:Notify(Config)
 		local Title = Config.Title or "Notification"
 		local Content = Config.Content or "Message"
 		local Duration = Config.Duration or 3
-		-- HARDCODED EXCLAMATION ICON (AS REQUESTED)
-		local Image = "rbxassetid://10651036728" 
+		-- ИКОНКА (Восклицательный знак)
+		local Image = "rbxassetid://3944703587" 
 
 		local Frame = Create("Frame", {
 			Parent = NotifContainer, Size = UDim2.new(1, 0, 0, 75), Position = UDim2.new(1, 100, 0, 0), -- Start off-screen
-			BackgroundColor3 = SelectedTheme.Main, BackgroundTransparency = 0.1, ZIndex = 10001,
+			BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.1, ZIndex = 10001,
             ClipsDescendants = true
 		})
 		AddCorner(Frame, 8); AddLiquidStroke(Frame, SelectedTheme).Transparency = 0.5
@@ -362,8 +358,8 @@ function Library:CreateWindow(Settings)
 		})
 		
 		-- Progress Bar (Bottom)
-		local BarBg = Create("Frame", { Parent = Frame, Size = UDim2.new(1, 0, 0, 3), Position = UDim2.new(0, 0, 1, -3), BackgroundColor3 = SelectedTheme.Second, BorderSizePixel = 0, ZIndex = 10002 })
-		local Bar = Create("Frame", { Parent = BarBg, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = SelectedTheme.Accent, BorderSizePixel = 0, ZIndex = 10003 })
+		local BarBg = Create("Frame", { Parent = Frame, Size = UDim2.new(1, -30, 0, 4), Position = UDim2.new(0, 15, 1, -10), BackgroundColor3 = SelectedTheme.Main, BorderSizePixel = 0, ZIndex = 10002 }); AddCorner(BarBg, 2)
+		local Bar = Create("Frame", { Parent = BarBg, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = SelectedTheme.Accent, BorderSizePixel = 0, ZIndex = 10003 }); AddCorner(Bar, 2)
 		
 		-- Intro Animation
 		TweenService:Create(Frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
@@ -444,7 +440,9 @@ function Library:CreateWindow(Settings)
 	UserInputService.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then draggingSidebar = false end end)
 	UserInputService.InputChanged:Connect(function(input)
 		if draggingSidebar and input.UserInputType == Enum.UserInputType.MouseMovement then
-			local RelX = input.Position.X - Main.AbsolutePosition.X
+			local MouseX = input.Position.X
+			local FrameX = Main.AbsolutePosition.X
+			local RelX = MouseX - FrameX
 			local NewWidth = math.clamp(RelX - 10, MinSidebar, MaxSidebar)
 			TabContainer.Size = UDim2.new(0, NewWidth, 1, -105)
 			ProfileFrame.Size = UDim2.new(0, NewWidth, 0, 45)
@@ -481,7 +479,6 @@ function Library:CreateWindow(Settings)
 			local OldTab = ActiveTab
 			local Direction = (OldTab and MyIndex > OldTab.Index) and "Down" or "Up"
 			ActiveTab = {Btn = TabBtn, Page = Page, Index = MyIndex}
-
 			for _, v in pairs(TabContainer:GetChildren()) do if v:IsA("TextButton") then TweenService:Create(v, TweenInfo.new(0.3), {BackgroundTransparency = 0.8, BackgroundColor3 = SelectedTheme.Second, TextColor3 = SelectedTheme.TextDark}):Play(); if v:FindFirstChild("UIStroke") then v.UIStroke.Transparency = 1 end end end
 			TweenService:Create(TabBtn, TweenInfo.new(0.3), {BackgroundTransparency = 0.5, BackgroundColor3 = SelectedTheme.Main, TextColor3 = SelectedTheme.Text}):Play(); TabStroke.Transparency = 0.5
 			if OldTab then local OldPage = OldTab.Page; local OutPos = (Direction == "Down") and UDim2.new(0,0,-1,0) or UDim2.new(0,0,1,0); TweenService:Create(OldPage, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = OutPos}):Play(); task.delay(0.4, function() if ActiveTab.Page ~= OldPage then OldPage.Visible = false end end) end
@@ -540,33 +537,34 @@ function Library:CreateWindow(Settings)
 			local BoxContainer = Create("Frame", { Parent = Frame, Size = UDim2.new(0, 100, 0, 30), Position = UDim2.new(1, -110, 0.5, -15), BackgroundColor3 = Color3.fromRGB(20,20,20), BackgroundTransparency = 0.5, ZIndex = 8 }); AddCorner(BoxContainer, 6)
 			local Box = Create("TextBox", { Parent = BoxContainer, Size = UDim2.new(1, -10, 1, 0), Position = UDim2.new(0, 5, 0, 0), BackgroundTransparency = 1, Text = Cfg.Default or "", PlaceholderText = Cfg.Placeholder or "Type...", TextColor3 = SelectedTheme.Text, Font = Enum.Font.Gotham, TextSize = 13, ZIndex = 9, TextXAlignment = Enum.TextXAlignment.Center })
 			Box.FocusLost:Connect(function() if Cfg.Callback then Cfg.Callback(Box.Text) end end)
-		end
+        end
 
-		function Elements:CreateDropdown(Cfg)
-			ElementOrder = ElementOrder + 1
-			local Expanded, Selected, Options = false, Cfg.Default, Cfg.Items or {}
-			local Drop = Create("TextButton", { Parent = Page, Size = UDim2.new(1, 0, 0, 35), BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.4, Text = "", AutoButtonColor = false, ClipsDescendants = true, ZIndex = 7, LayoutOrder = ElementOrder }); AddCorner(Drop, 6); AddLiquidStroke(Drop, SelectedTheme).Transparency = 0.8
-			local Title = Create("TextLabel", { Parent = Drop, Size = UDim2.new(1, -40, 0, 35), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = (Cfg.Name or "Dropdown")..(Selected and " - "..tostring(Selected) or ""), Font = Enum.Font.GothamMedium, TextColor3 = SelectedTheme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 8 })
-			local Arrow = Create("TextLabel", { Parent = Drop, Size = UDim2.new(0, 30, 0, 35), Position = UDim2.new(1, -35, 0, 0), BackgroundTransparency = 1, Text = "v", Font = Enum.Font.GothamBold, TextColor3 = SelectedTheme.TextDark, TextSize = 14, ZIndex = 8 })
-			local Container = Create("ScrollingFrame", { Parent = Drop, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 35), BackgroundTransparency = 1, ZIndex = 8, ScrollBarThickness = 2, ScrollBarImageColor3 = SelectedTheme.Accent, BorderSizePixel = 0, CanvasSize = UDim2.new(0,0,0,0) }); Create("UIPadding", { Parent = Container, PaddingTop = UDim.new(0, 5), PaddingBottom = UDim.new(0, 5), PaddingLeft = UDim.new(0, 5), PaddingRight = UDim.new(0, 5) }); local ListLayout = Create("UIListLayout", { Parent = Container, Padding = UDim.new(0, 2) })
-			
-			local function Refresh()
-				for _, v in pairs(Container:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
-				for _, item in pairs(Options) do
-					local Btn = Create("TextButton", { Parent = Container, Size = UDim2.new(1, 0, 0, 25), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = SelectedTheme.Main, BackgroundTransparency = 0.5, Text = tostring(item), Font = Enum.Font.Gotham, TextColor3 = SelectedTheme.Text, TextSize = 13, ZIndex = 9, TextXAlignment = Enum.TextXAlignment.Center }); AddCorner(Btn, 4)
-					Btn.MouseButton1Click:Connect(function() Selected = item; Title.Text = (Cfg.Name or "Dropdown").." - "..tostring(Selected); Expanded = false; TweenService:Create(Drop, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, 35)}):Play(); TweenService:Create(Arrow, TweenInfo.new(0.3), {Rotation = 0}):Play(); if Cfg.Callback then Cfg.Callback(item) end end)
-				end
-				Container.CanvasSize = UDim2.new(0, 0, 0, #Options * 27 + 10)
-			end
-			Refresh()
-			Drop.MouseButton1Click:Connect(function() Expanded = not Expanded; local H = Expanded and math.min(#Options * 27 + 45, 175) or 35; TweenService:Create(Drop, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, H)}):Play(); TweenService:Create(Arrow, TweenInfo.new(0.3), {Rotation = Expanded and 180 or 0}):Play(); TweenService:Create(Container, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 1, -35)}):Play() end)
-			return {Refresh = function(self, list) Options = list; Refresh() end}
+        function Elements:CreateDropdown(Cfg)
+            ElementOrder = ElementOrder + 1
+            local Expanded, Selected, Options = false, Cfg.Default, Cfg.Items or {}
+            local Drop = Create("TextButton", { Parent = Page, Size = UDim2.new(1, 0, 0, 35), BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.4, Text = "", AutoButtonColor = false, ClipsDescendants = true, ZIndex = 7, LayoutOrder = ElementOrder }); AddCorner(Drop, 6); AddLiquidStroke(Drop, SelectedTheme).Transparency = 0.8
+            local Title = Create("TextLabel", { Parent = Drop, Size = UDim2.new(1, -40, 0, 35), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = (Cfg.Name or "Dropdown")..(Selected and " - "..tostring(Selected) or ""), Font = Enum.Font.GothamMedium, TextColor3 = SelectedTheme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 8 })
+            local Arrow = Create("TextLabel", { Parent = Drop, Size = UDim2.new(0, 30, 0, 35), Position = UDim2.new(1, -35, 0, 0), BackgroundTransparency = 1, Text = "v", Font = Enum.Font.GothamBold, TextColor3 = SelectedTheme.TextDark, TextSize = 14, ZIndex = 8 })
+            local Container = Create("ScrollingFrame", { Parent = Drop, Size = UDim2.new(1, 0, 0, 0), Position = UDim2.new(0, 0, 0, 35), BackgroundTransparency = 1, ZIndex = 8, ScrollBarThickness = 2, ScrollBarImageColor3 = SelectedTheme.Accent, BorderSizePixel = 0, CanvasSize = UDim2.new(0,0,0,0) }); Create("UIPadding", { Parent = Container, PaddingTop = UDim.new(0, 5), PaddingBottom = UDim.new(0, 5), PaddingLeft = UDim.new(0, 5), PaddingRight = UDim.new(0, 5) }); local ListLayout = Create("UIListLayout", { Parent = Container, Padding = UDim.new(0, 2) })
+            
+            local function Refresh()
+                for _, v in pairs(Container:GetChildren()) do if v:IsA("TextButton") then v:Destroy() end end
+                for _, item in pairs(Options) do
+                    local Btn = Create("TextButton", { Parent = Container, Size = UDim2.new(1, 0, 0, 25), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = SelectedTheme.Main, BackgroundTransparency = 0.5, Text = tostring(item), Font = Enum.Font.Gotham, TextColor3 = SelectedTheme.Text, TextSize = 13, ZIndex = 9, TextXAlignment = Enum.TextXAlignment.Center }); AddCorner(Btn, 4)
+                    Btn.MouseButton1Click:Connect(function() Selected = item; Title.Text = (Cfg.Name or "Dropdown").." - "..tostring(Selected); Expanded = false; TweenService:Create(Drop, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, 35)}):Play(); TweenService:Create(Arrow, TweenInfo.new(0.3), {Rotation = 0}):Play(); if Cfg.Callback then Cfg.Callback(item) end end)
+                end
+                Container.CanvasSize = UDim2.new(0, 0, 0, #Options * 27 + 10)
+            end
+            Refresh()
+            Drop.MouseButton1Click:Connect(function() Expanded = not Expanded; local H = Expanded and math.min(#Options * 27 + 45, 175) or 35; TweenService:Create(Drop, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 0, H)}):Play(); TweenService:Create(Arrow, TweenInfo.new(0.3), {Rotation = Expanded and 180 or 0}):Play(); TweenService:Create(Container, TweenInfo.new(0.3), {Size = UDim2.new(1, 0, 1, -35)}):Play() end)
+            return {Refresh = function(self, list) Options = list; Refresh() end}
         end
 
         function Elements:CreateColorPicker(Cfg)
             ElementOrder = ElementOrder + 1
             local Color = Cfg.Default or Color3.fromRGB(255, 255, 255)
             
+            -- STATIC CONTAINER (Always Open, Height 190)
             local Frame = Create("Frame", { Parent = Page, Size = UDim2.new(1, 0, 0, 190), BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.4, ZIndex = 7, LayoutOrder = ElementOrder }); AddCorner(Frame, 6); AddLiquidStroke(Frame, SelectedTheme).Transparency = 0.8
             Create("TextLabel", { Parent = Frame, Size = UDim2.new(1, -50, 0, 35), Position = UDim2.new(0, 10, 0, 0), BackgroundTransparency = 1, Text = Cfg.Name or "Color Picker", Font = Enum.Font.GothamMedium, TextColor3 = SelectedTheme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 8 })
             local Preview = Create("Frame", { Parent = Frame, Size = UDim2.new(0, 25, 0, 25), Position = UDim2.new(1, -35, 0, 5), BackgroundColor3 = Color, ZIndex = 8 }); AddCorner(Preview, 6)
