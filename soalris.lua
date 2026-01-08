@@ -167,12 +167,7 @@ local function AddLiquidStroke(instance, theme)
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
         Parent = instance
     })
-    local gradient = Create("UIGradient", {
-        Color = theme.Gradient,
-        Rotation = 45,
-        Parent = stroke
-    })
-    
+    local gradient = Create("UIGradient", { Color = theme.Gradient, Rotation = 45, Parent = stroke })
     task.spawn(function()
         while stroke.Parent do
             if GlobalSettings.GlowMode == "Spin" then
@@ -261,7 +256,8 @@ end
 
 local function MakeResizable(handle, frame)
     local dragging, dragStart, startSize
-    local MinSize, MaxSize = Vector2.new(450, 300), Vector2.new(900, 700)
+    local MinSize = Vector2.new(450, 300)
+    local MaxSize = Vector2.new(900, 700)
     handle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true; dragStart = input.Position; startSize = frame.AbsoluteSize
@@ -298,11 +294,29 @@ function Library:KeySystem(Settings)
     
     local Content = Create("Frame", { Parent = Main, Size = UDim2.fromScale(1,1), BackgroundTransparency = 1, ZIndex = 2 })
     Create("TextLabel", { Parent = Content, Size = UDim2.new(1,0,0,50), BackgroundTransparency = 1, Text = Config.Title or "Security Access", Font = Enum.Font.GothamBold, TextColor3 = SelectedTheme.Text, TextSize = 22, ZIndex = 3 })
-    local Input = Create("TextBox", { Parent = Content, Size = UDim2.new(1, -60, 0, 45), Position = UDim2.new(0, 30, 0, 70), BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.7, Text = "", PlaceholderText = "Enter License Key...", TextColor3 = SelectedTheme.Text, Font = Enum.Font.Gotham, TextSize = 14, ZIndex = 3 }); AddCorner(Input, 8)
-    local InputStroke = AddLiquidStroke(Input, SelectedTheme); InputStroke.Transparency = 0.8
+    
+    local Input = Create("TextBox", { 
+        Parent = Content, Size = UDim2.new(1, -60, 0, 45), Position = UDim2.new(0, 30, 0, 70), 
+        BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.7, 
+        Text = "", PlaceholderText = "Enter License Key...", TextColor3 = SelectedTheme.Text, Font = Enum.Font.Gotham, TextSize = 14, ZIndex = 3 
+    }); AddCorner(Input, 8)
+    local InputStroke = AddLiquidStroke(Input, SelectedTheme)
+    InputStroke.Transparency = 0.8
+
     local CheckColor = Color3.new(SelectedTheme.Accent.R * 0.6, SelectedTheme.Accent.G * 0.6, SelectedTheme.Accent.B * 0.6)
-    local CheckBtn = Create("TextButton", { Parent = Content, Size = UDim2.new(0, 180, 0, 40), Position = UDim2.new(0, 30, 0, 140), BackgroundColor3 = CheckColor, BackgroundTransparency = 0.2, Text = "Check Key", Font = Enum.Font.GothamBold, TextColor3 = SelectedTheme.Text, TextSize = 14, ZIndex = 3 }); AddCorner(CheckBtn, 8); CreateRipple(CheckBtn, Color3.new(1,1,1))
-    local GetKeyBtn = Create("TextButton", { Parent = Content, Size = UDim2.new(0, 180, 0, 40), Position = UDim2.new(1, -210, 0, 140), BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.5, Text = "Get Key Link", Font = Enum.Font.GothamBold, TextColor3 = SelectedTheme.TextDark, TextSize = 14, ZIndex = 3 }); AddCorner(GetKeyBtn, 8); CreateRipple(GetKeyBtn, SelectedTheme.Accent); AddLiquidStroke(GetKeyBtn, SelectedTheme).Transparency = 0.7
+    
+    local CheckBtn = Create("TextButton", { 
+        Parent = Content, Size = UDim2.new(0, 180, 0, 40), Position = UDim2.new(0, 30, 0, 140), 
+        BackgroundColor3 = CheckColor, BackgroundTransparency = 0.2,
+        Text = "Check Key", Font = Enum.Font.GothamBold, TextColor3 = SelectedTheme.Text, TextSize = 14, ZIndex = 3 
+    }); AddCorner(CheckBtn, 8); CreateRipple(CheckBtn, Color3.new(1,1,1))
+    
+    local GetKeyBtn = Create("TextButton", { 
+        Parent = Content, Size = UDim2.new(0, 180, 0, 40), Position = UDim2.new(1, -210, 0, 140), 
+        BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.5,
+        Text = "Get Key Link", Font = Enum.Font.GothamBold, TextColor3 = SelectedTheme.TextDark, TextSize = 14, ZIndex = 3 
+    }); AddCorner(GetKeyBtn, 8); CreateRipple(GetKeyBtn, SelectedTheme.Accent); AddLiquidStroke(GetKeyBtn, SelectedTheme).Transparency = 0.7
+
     local Status = Create("TextLabel", { Parent = Content, Size = UDim2.new(1,0,0,20), Position = UDim2.new(0,0,1,-30), BackgroundTransparency = 1, Text = "Protected System", Font = Enum.Font.Gotham, TextColor3 = SelectedTheme.TextDark, TextSize = 12, ZIndex = 3 })
 
     GetKeyBtn.MouseButton1Click:Connect(function() 
@@ -314,12 +328,40 @@ function Library:KeySystem(Settings)
             end
             return false
         end)
-        if success then Status.Text = "Link copied!"; Status.TextColor3 = SelectedTheme.Accent else Status.Text = "Check Console (F9)"; Status.TextColor3 = SelectedTheme.Error; print("[Library] Copy Link:", LinkToCopy) end
-        task.wait(2); Status.Text = "Protected System"; Status.TextColor3 = SelectedTheme.TextDark
+
+        if success then
+            Status.Text = "Link copied!" 
+            Status.TextColor3 = SelectedTheme.Accent 
+        else
+            Status.Text = "Check Console (F9)" 
+            Status.TextColor3 = SelectedTheme.Error
+            print("[Library] Copy Link:", LinkToCopy)
+        end
+        task.wait(2) 
+        Status.Text = "Protected System" 
+        Status.TextColor3 = SelectedTheme.TextDark
     end)
+
     CheckBtn.MouseButton1Click:Connect(function()
-        if Input.Text == Key then TweenService:Create(Main, TweenInfo.new(0.4), {Size = UDim2.fromOffset(0,0)}):Play(); task.wait(0.4); ScreenGui:Destroy(); Validated = true
-        else Status.Text = "Incorrect Key!"; Status.TextColor3 = SelectedTheme.Error; InputStroke.Color = SelectedTheme.Error; InputStroke.Transparency = 0; local x, y = Main.Position.X.Scale, Main.Position.Y.Scale; for i = 1, 5 do Main.Position = UDim2.fromScale(x + math.random(-1,1)/200, y); task.wait(0.04) end; Main.Position = UDim2.fromScale(x, y); task.wait(1); InputStroke.Color = Color3.new(1,1,1); InputStroke.Transparency = 0.8; Status.Text = "Protected System"; Status.TextColor3 = SelectedTheme.TextDark end
+        if Input.Text == Key then
+            TweenService:Create(Main, TweenInfo.new(0.4), {Size = UDim2.fromOffset(0,0)}):Play()
+            task.wait(0.4); ScreenGui:Destroy(); Validated = true
+        else
+            Status.Text = "Incorrect Key!"
+            Status.TextColor3 = SelectedTheme.Error
+            InputStroke.Color = SelectedTheme.Error; InputStroke.Transparency = 0
+            
+            local x, y = Main.Position.X.Scale, Main.Position.Y.Scale
+            for i = 1, 5 do
+                Main.Position = UDim2.fromScale(x + math.random(-1,1)/200, y)
+                task.wait(0.04)
+            end
+            Main.Position = UDim2.fromScale(x, y)
+            
+            task.wait(1)
+            InputStroke.Color = Color3.new(1,1,1); InputStroke.Transparency = 0.8
+            Status.Text = "Protected System"; Status.TextColor3 = SelectedTheme.TextDark
+        end
     end)
     repeat task.wait() until Validated
 end
@@ -337,6 +379,66 @@ function Library:CreateWindow(Settings)
     local ScreenGui = Create("ScreenGui", { Name = "LiquidUI", ResetOnSpawn = false, DisplayOrder = 10000 })
     if RunService:IsStudio() then ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui") else pcall(function() ScreenGui.Parent = CoreGui end) if not ScreenGui.Parent then ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui") end end
 
+    -- === NOTIFICATION SYSTEM ===
+    -- Контейнер для уведомлений (справа снизу)
+    local NotifContainer = Create("Frame", {
+        Parent = ScreenGui, Size = UDim2.new(0, 300, 1, -20), Position = UDim2.new(1, -310, 0, 10),
+        BackgroundTransparency = 1, ZIndex = 10000
+    })
+    local NotifLayout = Create("UIListLayout", {
+        Parent = NotifContainer, SortOrder = Enum.SortOrder.LayoutOrder, 
+        VerticalAlignment = Enum.VerticalAlignment.Bottom, Padding = UDim.new(0, 10)
+    })
+
+    function Library:Notify(NotifyConfig)
+        local NTitle = NotifyConfig.Title or "Notification"
+        local NContent = NotifyConfig.Content or "Content"
+        local NDuration = NotifyConfig.Duration or 3
+        local NImage = NotifyConfig.Image or "rbxassetid://10651036728" -- Восклицательный знак в круге
+
+        local Frame = Create("Frame", {
+            Parent = NotifContainer, Size = UDim2.new(1, 0, 0, 60), Position = UDim2.new(1, 0, 0, 0), -- Старт за экраном
+            BackgroundColor3 = SelectedTheme.Main, BackgroundTransparency = 0.1, ZIndex = 10001
+        })
+        AddCorner(Frame, 8); AddLiquidStroke(Frame, SelectedTheme).Transparency = 0.5
+        
+        -- Иконка
+        local Icon = Create("ImageLabel", {
+            Parent = Frame, Size = UDim2.new(0, 30, 0, 30), Position = UDim2.new(0, 10, 0.5, -15),
+            BackgroundTransparency = 1, Image = NImage, ImageColor3 = SelectedTheme.Accent, ZIndex = 10002
+        })
+        
+        -- Заголовок
+        Create("TextLabel", {
+            Parent = Frame, Size = UDim2.new(1, -60, 0, 20), Position = UDim2.new(0, 50, 0, 8),
+            BackgroundTransparency = 1, Text = NTitle, Font = Enum.Font.GothamBold, TextColor3 = SelectedTheme.Text, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 10002
+        })
+        
+        -- Описание
+        Create("TextLabel", {
+            Parent = Frame, Size = UDim2.new(1, -60, 0, 20), Position = UDim2.new(0, 50, 0, 28),
+            BackgroundTransparency = 1, Text = NContent, Font = Enum.Font.Gotham, TextColor3 = SelectedTheme.TextDark, TextSize = 12, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 10002
+        })
+        
+        -- Полоска таймера
+        local BarBg = Create("Frame", { Parent = Frame, Size = UDim2.new(1, -20, 0, 3), Position = UDim2.new(0, 10, 1, -5), BackgroundColor3 = SelectedTheme.Second, BorderSizePixel = 0, ZIndex = 10002 }); AddCorner(BarBg, 2)
+        local Bar = Create("Frame", { Parent = BarBg, Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = SelectedTheme.Accent, BorderSizePixel = 0, ZIndex = 10003 }); AddCorner(Bar, 2)
+        
+        -- Анимация появления
+        TweenService:Create(Frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, 0, 0)}):Play()
+        -- Анимация бара
+        TweenService:Create(Bar, TweenInfo.new(NDuration, Enum.EasingStyle.Linear), {Size = UDim2.new(0, 0, 1, 0)}):Play()
+        
+        task.spawn(function()
+            task.wait(NDuration)
+            -- Анимация исчезновения
+            TweenService:Create(Frame, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {Position = UDim2.new(1, 50, 0, 0), BackgroundTransparency = 1}):Play()
+            task.wait(0.5)
+            Frame:Destroy()
+        end)
+    end
+    -- ==================================
+
     local Main = Create("Frame", {
         Name = "Main", Parent = ScreenGui, Size = UDim2.fromOffset(600, 400), Position = UDim2.fromScale(0.5, 0.5),
         AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = SelectedTheme.Main, BackgroundTransparency = WindowTrans, 
@@ -347,7 +449,7 @@ function Library:CreateWindow(Settings)
     Main.Size = UDim2.fromOffset(0,0)
     TweenService:Create(Main, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(600, 400)}):Play()
 
-    -- RESIZE HANDLE (Pavel -45)
+    -- RESIZE HANDLE
     local ResizeBtn = Create("TextButton", {
         Parent = Main, Size = UDim2.fromOffset(25, 25), Position = UDim2.new(1, 0, 1, 0), 
         AnchorPoint = Vector2.new(1, 1),
@@ -363,15 +465,11 @@ function Library:CreateWindow(Settings)
     local Close = Create("TextButton", { Parent = TopBar, Size = UDim2.new(0, 40, 1, 0), Position = UDim2.new(1, -40, 0, 0), BackgroundTransparency = 1, Text = "×", Font = Enum.Font.Gotham, TextColor3 = SelectedTheme.Text, TextSize = 28, ZIndex = 6 })
     Close.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
-    -- RESIZABLE SIDEBAR
-    local SidebarWidth = 150
-    local MinSidebar, MaxSidebar = 150, 350
-
-    local TabContainer = Create("ScrollingFrame", { Parent = Main, Size = UDim2.new(0, SidebarWidth, 1, -105), Position = UDim2.new(0, 10, 0, 45), BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.5, ScrollBarThickness = 0, BorderSizePixel = 0, ZIndex = 5 }); AddCorner(TabContainer, 8)
+    local TabContainer = Create("ScrollingFrame", { Parent = Main, Size = UDim2.new(0, 150, 1, -50), Position = UDim2.new(0, 10, 0, 45), BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.5, ScrollBarThickness = 0, BorderSizePixel = 0, ZIndex = 5 }); AddCorner(TabContainer, 8)
     Create("UIListLayout", { Parent = TabContainer, Padding = UDim.new(0, 8) }); 
     Create("UIPadding", { Parent = TabContainer, PaddingTop = UDim.new(0, 10), PaddingLeft = UDim.new(0, 5), PaddingRight = UDim.new(0, 5) })
     
-    -- VISIBLE SIDEBAR RESIZER (DOTS)
+    -- VISIBLE SIDEBAR RESIZER (DOTS FIX)
     local SidebarResizer = Create("TextButton", {
         Parent = Main, Size = UDim2.new(0, 12, 1, -50), Position = UDim2.new(0, 150, 0, 45),
         BackgroundTransparency = 1, Text = "", AutoButtonColor = false, ZIndex = 20
@@ -382,9 +480,8 @@ function Library:CreateWindow(Settings)
         local Dot = Create("Frame", { Parent = GripFrame, Size = UDim2.fromOffset(4, 4), BackgroundColor3 = SelectedTheme.TextDark, BackgroundTransparency = 0.4, BorderSizePixel = 0 }); AddCorner(Dot, 100)
     end
     
-    -- PROFILE SECTION
     local ProfileFrame = Create("Frame", {
-        Parent = Main, Size = UDim2.new(0, SidebarWidth, 0, 45), Position = UDim2.new(0, 10, 1, -55),
+        Parent = Main, Size = UDim2.new(0, 150, 0, 45), Position = UDim2.new(0, 10, 1, -55),
         BackgroundColor3 = SelectedTheme.Second, BackgroundTransparency = 0.5, BorderSizePixel = 0, ZIndex = 5
     }); AddCorner(ProfileFrame, 8)
     local AvatarImg = "rbxasset://textures/ui/GuiImagePlaceholder.png"
@@ -397,12 +494,18 @@ function Library:CreateWindow(Settings)
 
     -- SIDEBAR RESIZE LOGIC
     local draggingSidebar = false
+    local SidebarWidth = 150
+    local MinSidebar, MaxSidebar = 150, 350
+    
     SidebarResizer.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then draggingSidebar = true end end)
     UserInputService.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then draggingSidebar = false end end)
     UserInputService.InputChanged:Connect(function(input)
         if draggingSidebar and input.UserInputType == Enum.UserInputType.MouseMovement then
-            local RelX = input.Position.X - Main.AbsolutePosition.X
+            local MouseX = input.Position.X
+            local FrameX = Main.AbsolutePosition.X
+            local RelX = MouseX - FrameX
             local NewWidth = math.clamp(RelX - 10, MinSidebar, MaxSidebar)
+            
             TabContainer.Size = UDim2.new(0, NewWidth, 1, -105)
             ProfileFrame.Size = UDim2.new(0, NewWidth, 0, 45)
             SidebarResizer.Position = UDim2.new(0, NewWidth + 5, 0, 45) 
@@ -438,13 +541,30 @@ function Library:CreateWindow(Settings)
             local OldTab = ActiveTab
             local Direction = (OldTab and MyIndex > OldTab.Index) and "Down" or "Up"
             ActiveTab = {Btn = TabBtn, Page = Page, Index = MyIndex}
-            for _, v in pairs(TabContainer:GetChildren()) do if v:IsA("TextButton") then TweenService:Create(v, TweenInfo.new(0.3), {BackgroundTransparency = 0.8, BackgroundColor3 = SelectedTheme.Second, TextColor3 = SelectedTheme.TextDark}):Play(); if v:FindFirstChild("UIStroke") then v.UIStroke.Transparency = 1 end end end
-            TweenService:Create(TabBtn, TweenInfo.new(0.3), {BackgroundTransparency = 0.5, BackgroundColor3 = SelectedTheme.Main, TextColor3 = SelectedTheme.Text}):Play(); TabStroke.Transparency = 0.5
-            if OldTab then local OldPage = OldTab.Page; local OutPos = (Direction == "Down") and UDim2.new(0,0,-1,0) or UDim2.new(0,0,1,0); TweenService:Create(OldPage, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = OutPos}):Play(); task.delay(0.4, function() if ActiveTab.Page ~= OldPage then OldPage.Visible = false end end) end
-            Page.Visible = true; Page.Position = (Direction == "Down") and UDim2.new(0,0,1,0) or (Direction == "Up" and UDim2.new(0,0,-1,0) or UDim2.new(0,0,0,0))
+
+            for _, v in pairs(TabContainer:GetChildren()) do 
+                if v:IsA("TextButton") then 
+                    TweenService:Create(v, TweenInfo.new(0.3), {BackgroundTransparency = 0.8, BackgroundColor3 = SelectedTheme.Second, TextColor3 = SelectedTheme.TextDark}):Play() 
+                    if v:FindFirstChild("UIStroke") then v.UIStroke.Transparency = 1 end
+                end 
+            end
+            
+            TweenService:Create(TabBtn, TweenInfo.new(0.3), {BackgroundTransparency = 0.5, BackgroundColor3 = SelectedTheme.Main, TextColor3 = SelectedTheme.Text}):Play()
+            TabStroke.Transparency = 0.5
+            
+            if OldTab then
+                local OldPage = OldTab.Page
+                local OutPos = (Direction == "Down") and UDim2.new(0,0,-1,0) or UDim2.new(0,0,1,0)
+                TweenService:Create(OldPage, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = OutPos}):Play()
+                task.delay(0.4, function() if ActiveTab.Page ~= OldPage then OldPage.Visible = false end end)
+            end
+            
+            Page.Visible = true
+            if Direction == "Down" then Page.Position = UDim2.new(0,0,1,0) elseif Direction == "Up" then Page.Position = UDim2.new(0,0,-1,0) else Page.Position = UDim2.new(0,0,0,0) end
             if Direction ~= "None" then TweenService:Create(Page, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Position = UDim2.new(0,0,0,0)}):Play() end
         end
-        TabBtn.MouseButton1Click:Connect(Activate); if MyIndex == 1 then Activate() end
+        TabBtn.MouseButton1Click:Connect(Activate)
+        if MyIndex == 1 then Activate() end
 
         local Elements = {}
         local ElementOrder = 0
